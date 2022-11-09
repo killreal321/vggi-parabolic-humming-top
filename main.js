@@ -87,20 +87,34 @@ function draw() {
 }
 
 //parametrical equations
-//x = ((Math.abs(z) - h)**2/()2*p)*cosB 
-//y = ((Math.abs(z) - h)**2/()2*p)*sinB 
+//x = ((Math.abs(z) - h)**2/(2*p)*cosB 
+//y = ((Math.abs(z) - h)**2/(2*p)*sinB 
 //z=z
 //B = [0, 2Pi]
 function CreateSurfaceData()
 {
     let vertexList = [];
 
-    for (let i=0; i<360; i+=10) {
-        vertexList.push( ((Math.pow((Math.abs(1) - 3), 2))/(2*2))*Math.cos(deg2rad(i)), 1, ((Math.pow((Math.abs(1) - 3), 2))/(2*2))*Math.sin(deg2rad(i)) );
-        vertexList.push( ((Math.pow((Math.abs(1) - 3), 2))/(2*2))*Math.cos(deg2rad(i)), 0, ((Math.pow((Math.abs(1) - 3), 2))/(2*2))*Math.sin(deg2rad(i)) );
-        // vertexList.push( Math.sin(deg2rad(i)), 1, Math.cos(deg2rad(i)) );
-        // vertexList.push( Math.sin(deg2rad(i)), 0, Math.cos(deg2rad(i)) );
-        console.log(vertexList);
+    let zStep = 0.1;
+    let BStep = 10;
+    let h = 1;
+    let p = 0.5;
+
+    for  (let B = 0; B <= 360; B += BStep) {
+        for (let z = -h; z <= h; z += zStep) {
+            let x = ((Math.pow(Math.abs(z) - h, 2))/(2*p))*Math.cos(deg2rad(B));
+            let y = ((Math.pow(Math.abs(z) - h, 2))/(2*p))*Math.sin(deg2rad(B));
+
+            vertexList.push(x, y, z)
+        }
+    }
+    for  (let z = -h; z <= h; z += zStep) {
+        for (let B = 0; B <= 360; B += BStep) {
+            let x = ((Math.pow(Math.abs(z) - h, 2))/(2*p))*Math.cos(deg2rad(B));
+            let y = ((Math.pow(Math.abs(z) - h, 2))/(2*p))*Math.sin(deg2rad(B));
+
+            vertexList.push(x, y, z)
+        }
     }
     return vertexList;
 }
@@ -173,14 +187,14 @@ function init() {
             "<p>Sorry, could not get a WebGL graphics context.</p>";
         return;
     }
-    try {
+    // try {
         initGL();  // initialize the WebGL graphics context
-    }
-    catch (e) {
-        document.getElementById("canvas-holder").innerHTML =
-            "<p>Sorry, could not initialize the WebGL graphics context: " + e + "</p>";
-        return;
-    }
+    // }
+    // catch (e) {
+        // document.getElementById("canvas-holder").innerHTML =
+        //     "<p>Sorry, could not initialize the WebGL graphics context: " + e + "</p>";
+        // return;
+    // }
 
     spaceball = new TrackballRotator(canvas, draw, 0);
 
