@@ -30,7 +30,10 @@ function Model(name) {
         gl.vertexAttribPointer(shProgram.iAttribVertex, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(shProgram.iAttribVertex);
    
-        gl.drawArrays(gl.LINE_STRIP, 0, this.count);
+        // gl.drawArrays(gl.LINE_STRIP, 0, this.count);
+        gl.vertexAttribPointer(shProgram.iNormal, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(shProgram.iNormal);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.count);
     }
 }
 
@@ -47,6 +50,18 @@ function ShaderProgram(name, program) {
     this.iColor = -1;
     // Location of the uniform matrix representing the combined transformation.
     this.iModelViewProjectionMatrix = -1;
+
+    this.iNormal = -1;
+    this.iNormalMatrix = -1;
+
+    this.iAmbientColor = -1;
+    this.iDiffuseColor = -1;
+    this.iSpecularColor = -1;
+
+    this.iShininess = -1;
+
+    this.iLightPosition = -1;
+    this.iLightVec = -1;
 
     this.Use = function() {
         gl.useProgram(this.prog);
@@ -73,6 +88,8 @@ function draw() {
 
     let matAccum0 = m4.multiply(rotateToPointZero, modelView );
     let matAccum1 = m4.multiply(translateToPointZero, matAccum0 );
+    const modelViewInverse = m4.inverse(matAccum1, new Float32Array(16));
+    const normalMatrix = m4.transpose(modelViewInverse, new Float32Array(16));
         
     /* Multiply the projection matrix times the modelview matrix to give the
        combined transformation matrix, and send that to the shader program. */
@@ -80,6 +97,20 @@ function draw() {
 
     gl.uniformMatrix4fv(shProgram.iModelViewProjectionMatrix, false, modelViewProjection );
     
+
+    gl.uniformMatrix4fv(shProgram.iNormalMatrix, false, normalMatrix);
+
+    gl.uniform3fv(shProgram.iLightPosition, lightCoordinates());
+    gl.uniform3fv(shProgram.iLightDirection, [1, 0, 0]);
+
+    gl.uniform3fv(shProgram.iLightVec, new Float32Array(3));
+
+    gl.uniform1f(shProgram.iShininess, 1.0);
+
+    gl.uniform3fv(shProgram.iAmbientColor, [0.5, 10, 0.4]);
+    gl.uniform3fv(shProgram.iDiffuseColor, [1.3, 1.0, 0.0]);
+    gl.uniform3fv(shProgram.iSpecularColor, [1.5, 1.0, 1.0]);
+
     /* Draw the six faces of a cube, with different colors. */
     gl.uniform4fv(shProgram.iColor, [1,1,0,1] );
 
@@ -96,7 +127,7 @@ function CreateSurfaceData()
     let vertexList = [];
 
     let zStep = 0.1;
-    let BStep = 10;
+    let BStep = 0.1;
     let h = 1;
     let p = 0.5;
 
@@ -130,6 +161,18 @@ function initGL() {
     shProgram.iAttribVertex              = gl.getAttribLocation(prog, "vertex");
     shProgram.iModelViewProjectionMatrix = gl.getUniformLocation(prog, "ModelViewProjectionMatrix");
     shProgram.iColor                     = gl.getUniformLocation(prog, "color");
+
+    shProgram.iNormal = gl.getAttribLocation(prog, "normal");
+    shProgram.iNormalMatrix = gl.getUniformLocation(prog, "normalMatrix");
+
+    shProgram.iAmbientColor = gl.getUniformLocation(prog, "ambientColor");
+    shProgram.iDiffuseColor = gl.getUniformLocation(prog, "diffuseColor");
+    shProgram.iSpecularColor = gl.getUniformLocation(prog, "specularColor");
+
+    shProgram.iShininess = gl.getUniformLocation(prog, "shininess");
+
+    shProgram.iLightPosition = gl.getUniformLocation(prog, "lightPosition");
+    shProgram.iLightVec = gl.getUniformLocation(prog, "lightVec");
 
     surface = new Model('Surface');
     surface.BufferData(CreateSurfaceData());
@@ -200,3 +243,38 @@ function init() {
 
     draw();
 }
+
+let handlePosition = 0.0;
+
+window.addEventListener("keydown", function (event) {
+    switch (event.key) {
+      case "ArrowLeft":
+        left();
+        break;
+      case "ArrowRight":
+        right();
+        break;
+      default:
+        return;
+    }
+  });
+
+  const left = () => {
+    handlePosition -= 0.1;
+    reDraw();
+  };
+
+  const right = () => {
+    handlePosition += 0.1;
+    reDraw();
+  };
+
+  const lightCoordinates = () => {
+    let coord = Math.sin(handlePosition) * 1.2;
+    return [coord, -2, coord * coord];
+  };
+
+  const reDraw = () => {
+    surface.BufferData(CreateSurfaceData());
+    draw();
+  };
