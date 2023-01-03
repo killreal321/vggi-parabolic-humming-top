@@ -52,7 +52,7 @@ function ShaderProgram(name, program) {
     this.iModelViewProjectionMatrix = -1;
 
     this.iNormal = -1;
-    this.iNormalMatrix = -1;
+    this.iNormalMatrix = 1;
 
     this.iAmbientColor = -1;
     this.iDiffuseColor = -1;
@@ -60,7 +60,7 @@ function ShaderProgram(name, program) {
 
     this.iShininess = -1;
 
-    this.iLightPosition = -1;
+    this.iLightPosition = 1;
     this.iLightVec = -1;
 
     this.Use = function() {
@@ -107,9 +107,9 @@ function draw() {
 
     gl.uniform1f(shProgram.iShininess, 1.0);
 
-    gl.uniform3fv(shProgram.iAmbientColor, [0.5, 10, 0.4]);
-    gl.uniform3fv(shProgram.iDiffuseColor, [1.3, 1.0, 0.0]);
-    gl.uniform3fv(shProgram.iSpecularColor, [1.5, 1.0, 1.0]);
+    gl.uniform3fv(shProgram.iAmbientColor, [0.1, 5, 0.3]);
+    gl.uniform3fv(shProgram.iDiffuseColor, [1.4, 1.0, 0.0]);
+    gl.uniform3fv(shProgram.iSpecularColor, [1.9, 1.0, 1.0]);
 
     /* Draw the six faces of a cube, with different colors. */
     gl.uniform4fv(shProgram.iColor, [1,1,0,1] );
