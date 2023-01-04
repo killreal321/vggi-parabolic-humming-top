@@ -107,7 +107,7 @@ function draw() {
 
     gl.uniform1f(shProgram.iShininess, 1.0);
 
-    gl.uniform3fv(shProgram.iAmbientColor, [0.1, 5, 0.3]);
+    gl.uniform3fv(shProgram.iAmbientColor, [0.1, 7, 0.2]);
     gl.uniform3fv(shProgram.iDiffuseColor, [1.4, 1.0, 0.0]);
     gl.uniform3fv(shProgram.iSpecularColor, [1.9, 1.0, 1.0]);
 
@@ -244,34 +244,39 @@ function init() {
     draw();
 }
 
-let handlePosition = 0.0;
+let handlePosition = 0;
+    let canvas = document.getElementById("webglcanvas");
 
-window.addEventListener("keydown", function (event) {
-    switch (event.key) {
-      case "ArrowLeft":
-        left();
-        break;
-      case "ArrowRight":
-        right();
-        break;
-      default:
-        return;
+    canvas.addEventListener("mouseup", () => {
+        canvas.addEventListener("mousemove", moveImage);
+    });
+
+    function moveImage(event){
+        if(event.clientX<this.offsetWidth/2){
+            left();
+        }else{
+            right();
+        }
     }
-  });
 
+    canvas.addEventListener("mousedown", () => {
+        canvas.removeEventListener("mousemove", moveImage);
+    })
+
+    
   const left = () => {
-    handlePosition -= 0.1;
+    handlePosition -= 0.05;
     reDraw();
   };
 
   const right = () => {
-    handlePosition += 0.1;
+    handlePosition += 0.05;
     reDraw();
   };
 
   const lightCoordinates = () => {
-    let coord = Math.sin(handlePosition) * 1.2;
-    return [coord, -2, coord * coord];
+    let coord = Math.sin(handlePosition) * 1.0;
+    return [coord, -1, coord * coord];
   };
 
   const reDraw = () => {
