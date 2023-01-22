@@ -149,9 +149,6 @@ function draw() {
 //z=z
 //B = [0, 2Pi]
 
-let a = 0.5;
-let b = 10;
-let c = 0.5;
 
 function CreateSurfaceData()
 {
@@ -165,36 +162,36 @@ function CreateSurfaceData()
     let p = 0.5;
     let b = 360
 
-    const step = (max, splines = 20) => {
+    const step = (max, splines = 30) => {
         return max / (splines - 1);
     };
 
     let stepI = step(b, splines);
     let stepJ = step(h, splines);
 
-     let getI = (i) => {
+     let getb = (i) => {
         return i / b;
     };
 
-    let getJ = (j) => {
+    let geth = (j) => {
         return j / h;
     };
 
-    for  (let B = 0; B <= b; B += stepI) {
+    for  (let B = 0; B <= b; B += BStep) {
          for (let z = -h; z <= h; z += zStep) {
             vertexList.push(
                 (((Math.pow(Math.abs(z) - h, 2))/(2*p))*Math.cos(deg2rad(B))),
                 (((Math.pow(Math.abs(z) - h, 2))/(2*p))*Math.sin(deg2rad(B))), 
                 z
             );
-            textureList.push(getI(B), getJ(z));
+            textureList.push(getb(B), geth(z));
 
             vertexList.push(
                 (((Math.pow(Math.abs(z + stepJ) - h, 2))/(2*p))*Math.cos(deg2rad(B + stepI))),
                 (((Math.pow(Math.abs(z + stepJ) - h, 2))/(2*p))*Math.sin(deg2rad(B + stepI))),
                 z
             );
-            textureList.push(getI(B + stepI), getJ(z + stepJ))
+            textureList.push(getb(B + stepI), geth(z + stepJ))
         }
     }
     return {vertexList,textureList};
@@ -344,12 +341,12 @@ const pressD = () => {
 };
 
 const left = () => {
-  handlePosition -= 0.07;
+  handlePosition -= 1.5;
   reDraw();
 };
 
 const right = () => {
-  handlePosition += 0.07;
+  handlePosition += 1.5;
   reDraw();
 };
 
